@@ -82,7 +82,7 @@ Menu Kill Time
 MSI Mode
 Clean Temp Files
 
-4. Technical Support and Links
+**4. Technical Support and Links**
 
     Community / Support: [Discord.](https://discord.com/invite/CdR6KVSpYv)
 
