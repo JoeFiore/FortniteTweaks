@@ -4,10 +4,13 @@
 
 1. Program Purpose and Benefits
 
-Category	Details
-Core Function;	This is a comprehensive system optimization utility designed to reduce system latency, improve performance, and declutter your Windows installation. It achieves this by applying a series of advanced registry tweaks, power management changes, and debloating routines.
-Target Audience;	PC gamers, competitive users, streamers, or anyone seeking maximum responsiveness and performance from their Windows system.
-Key Benefits;	Lower Input Lag: Tweaks target I/O system and processor scheduling to reduce delays between input and on-screen action. Increased FPS/Stability: Removal of background processes and unnecessary services (debloat). System Cleanup: Automated temporary file and cache cleaning. Optimized Power: Custom power plan for high-performance CPU scheduling.
+**Core Function**
+This is a comprehensive system optimization utility designed to reduce system latency, improve performance, and declutter your Windows installation. It achieves this by applying a series of advanced registry tweaks, power management changes, and debloating routines.
+**Target Audience**
+PC gamers, competitive users, streamers, or anyone seeking maximum responsiveness and performance from their Windows system.
+**Key Benefits**
+Lower Input Lag: Tweaks target I/O system and processor scheduling to reduce delays between input and on-screen action. Increased FPS/Stability: Removal of background processes and unnecessary services (debloat). System Cleanup: Automated temporary file and cache cleaning. **Optimized Power**
+Custom power plan for high-performance CPU scheduling.
 
 **2. Safety, Preparation, and Requirements**
 
@@ -84,3 +87,7 @@ Clean Temp Files
     Community / Support: [Discord.](https://discord.com/invite/CdR6KVSpYv)
 
 Note on Support: While community support may be available, recovery for major issues relies on the System Restore Point created during the initial setup.
+
+### **5. If you do everything correctly the main page should look something like this:**
+   
+<img width="800" height="578" alt="Screenshot 2025-10-02 232704" src="https://github.com/user-attachments/assets/41bc86c0-fee8-4df5-953e-e5c29546f6d9" />
