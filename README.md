@@ -84,7 +84,7 @@ Clean Temp Files
 
 **4. Technical Support and Links**
 
-    Community / Support: [Discord.](https://discord.com/invite/CdR6KVSpYv)
+    Community / Support: https://discord.com/invite/CdR6KVSpYv
 
 Note on Support: While community support may be available, recovery for major issues relies on the System Restore Point created during the initial setup.
 
