@@ -1,0 +1,115 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<AssemblyVersion>0.0.8</AssemblyVersion>
+	<FileVersion>0.0.8</FileVersion>
+	<Version>0.0.8</Version>
+
+	<Company>LUNCHBOX</Company>
+	<Product>LUNCHBOX Fortnite Tweaks</Product>
+	<Description>Fortnite optimization and system tweaking utility.</Description>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>PicturesToUploadToResources\logo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="apply_all_tweaks.bat" />
+    <None Remove="cleanup_advanced.bat" />
+    <None Remove="controller_0_delay.bat" />
+    <None Remove="controller_pack.bat" />
+    <None Remove="fortnite_config.bat" />
+    <None Remove="keyboard_0_delay.bat" />
+    <None Remove="keyboard_pack.bat" />
+    <None Remove="network_chooser.bat" />
+    <None Remove="OtherTweaks\Setup.bat" />
+    <None Remove="reset_advanced_tweaks.bat" />
+    <None Remove="reset_all_tweaks.bat" />
+    <None Remove="restart_pc.bat" />
+    <None Remove="stutter_safe.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\fortnite_config.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LunchboxTweaks\keyboard_0_delay.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LunchboxTweaks\keyboard_pack.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\controller_pack.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\controller_0_delay.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LunchboxTweaks\network_chooser.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\Setup.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PicturesToUploadToResources\logo.ico" />
+    <Content Include="LunchboxTweaks\reset_all_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LunchboxTweaks\restart_pc.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LunchboxTweaks\stutter_safe.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\stutter_aggressive.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\cleanup_advanced.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\apply_all_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LunchboxTweaks\reset_advanced_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
