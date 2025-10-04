@@ -279,7 +279,7 @@ namespace FortniteTweaks
                     foreach (var file in filesToDownload)
                     {
                         // ...
-                        foreach (var (sourceUrl, subDirectory, targetFileName) in filesToDownload)
+                        foreach (var (sourceUrl, subDirectory, targetFileName) in filesToDownload) ;
                         {
                             string sourceUrl = furl; // NO NEED to redefine the variables inside the loop anymore!
                             // The variables sourceUrl, subDirectory, and targetFileName are now defined here.
