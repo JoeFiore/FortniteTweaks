@@ -20,47 +20,47 @@ echo.
 
 REM --- 1. KEYBOARD PACK TWEAKS ---
 echo [1/8] Applying Keyboard Pack Tweaks...
-CALL keyboard_pack.bat
+CALL LunchboxTweaks\\keyboard_pack.bat
 echo.
 
 REM --- 2. CONTROLLER PACK TWEAKS ---
 echo [2/8] Applying Controller Pack Tweaks...
-CALL controller_pack.bat
+CALL LunchboxTweaks\\controller_pack.bat
 echo.
 
 REM --- 3. KEYBOARD 0 DELAY TWEAKS ---
 echo [3/8] Applying Keyboard 0 Delay Tweaks...
-CALL keyboard_0_delay.bat
+CALL LunchboxTweaks\\keyboard_0_delay.bat
 echo.
 
 REM --- 4. CONTROLLER 0 DELAY TWEAKS ---
 echo [4/8] Applying Controller 0 Delay Tweaks...
-CALL controller_0_delay.bat
+CALL LunchboxTweaks\\controller_0_delay.bat
 echo.
 
 REM --- 5. STUTTER/FPS SAFE TWEAKS ---
 echo [5/8] Applying Stutter/FPS SAFE Tweaks...
-CALL stutter_safe.bat
+CALL LunchboxTweaks\\stutter_safe.bat
 echo.
 
 REM --- 6. STUTTER/FPS AGGRESSIVE TWEAKS ---
 echo [6/8] Applying Stutter/FPS AGGRESSIVE Tweaks...
-CALL stutter_aggressive.bat
+CALL LunchboxTweaks\\stutter_aggressive.bat
 echo.
 
 REM --- 7. BASIC NETWORK TWEAKS ---
 echo [7/8] Applying Basic Network Tweaks...
-CALL network_basic.bat
+CALL LunchboxTweaks\\network_basic.bat
 echo.
 
 REM --- 8. CLEANUP / PERFORMANCE TWEAKS ---
 echo [8/8] Applying Advanced Cleanup/Performance Tweaks...
-CALL cleanup_advanced.bat
+CALL LunchboxTweaks\\cleanup_advanced.bat
 echo.
 
 REM --- 8. FORTNITE CONFIG TWEAKS ---
 echo [8/8] Applying Fortnite Config Tweaks...
-CALL fortnite_config.bat
+CALL LunchboxTweaks\\fortnite_config.bat
 echo.
 
 echo =======================================================

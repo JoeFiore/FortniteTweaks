@@ -1,12 +1,105 @@
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Drawing; // Make sure this is at the top of the file
 using System.IO;
+using System.Media;
+using System.Net;
 using System.Windows.Forms; // Ensure this is present for MessageBox
 namespace FortniteTweaks
 {
     public partial class keyboardPack : Form
 
     {
+        // ----------------------------------------------------------------------
+        // 1. FIELDS AND CONSTANTS
+        // ----------------------------------------------------------------------
+        private static readonly HttpClient client = new HttpClient();
+        private readonly string TempFolderName = "MyFortniteTweakTempFiles";
+        private string TemporaryPath;
+        private int filesCompleted = 0;
+        private const int TotalFiles = 26;
+
+        // The FINAL, CORRECTED List of all files to download (26 total)
+        private List<(string url, string subDir, string fileName)> filesToDownload = new List<(string url, string subDir, string fileName)>
+    {
+        // Folder 1: 'LunchboxTweaks' (13 files - names confirmed)
+        ("https://drive.google.com/uc?export=download&id=1_qcHxI-brXrByavKBxFpOsirAdX6S4V0", "LunchboxTweaks", "apply_all_tweaks.bat"),
+        ("https://drive.google.com/uc?export=download&id=11J_pH2aLc_SlRdn6EvsU27c98GNQ-Clk", "LunchboxTweaks", "cleanup_advanced.bat"),
+        ("https://drive.google.com/uc?export=download&id=1Qn69LG5oHGX39_0TbJd0BCw5pD8IMFq4", "LunchboxTweaks", "controller_0_delay.bat"),
+        ("https://drive.google.com/uc?export=download&id=1Vd8vbdojt5p2gjs5P8Czb0KwQzlwP1ex", "LunchboxTweaks", "controller_pack.bat"),
+        ("https://drive.google.com/uc?export=download&id=1rasNEToWRxaDtuqDNHlPO7aJDDQrkO5G", "LunchboxTweaks", "fortnite_config.bat"),
+        ("https://drive.google.com/uc?export=download&id=1CX8z8GyUfU7xxGE1XJ86Ywb9kWI4chcR", "LunchboxTweaks", "keyboard_0_delay.bat"),
+        ("https://drive.google.com/uc?export=download&id=14RJ3nTdUJvb2R9BtUrBl8zMtdxneFuXm", "LunchboxTweaks", "keyboard_pack.bat"),
+        ("https://drive.google.com/uc?export=download&id=1CjfDQZwwaAP3_P4kGAyjd-ahhGOPfx7z", "LunchboxTweaks", "network_chooser.bat"),
+        ("https://drive.google.com/uc?export=download&id=1aFRhHX8_KocMRg6GJiFKCyxPclXM1WdS", "LunchboxTweaks", "reset_advanced_tweaks.bat"),
+        ("https://drive.google.com/uc?export=download&id=137GfnVfVl3ZpXl50UH3FVBupL0ax8nsV", "LunchboxTweaks", "reset_all_tweaks.bat"),
+        ("https://drive.google.com/uc?export=download&id=1Of1L9pI8AkJt714eEjySAAA69lmAivY6", "LunchboxTweaks", "restart_pc.bat"),
+        ("https://drive.google.com/uc?export=download&id=15OFMNGeQ7mNJefNAFq9n4maPfIy1oqFG", "LunchboxTweaks", "stutter_aggressive.bat"),
+        ("https://drive.google.com/uc?export=download&id=1KR4sCNPAC5BdlU5-JIb4CpSRw1HNnAH6", "LunchboxTweaks", "stutter_safe.bat"),
+
+        // Folder 2: 'OtherTweaks' (13 files - names now fully confirmed)
+        ("https://drive.google.com/uc?export=download&id=14xVyRrEl6UytokziCFdyA7y9ZQeRRDUZ", "OtherTweaks", "Setup.bat"),
+        ("https://drive.google.com/uc?export=download&id=1ltMxQ9sCdrZq8wIUZjC-xNXzN3NKMiAx", "OtherTweaks", "misc_msi_mode.bat"),
+        ("https://drive.google.com/uc?export=download&id=1Zbx4r2hNkmW7FNOJetAtMxodcTLx2kgh", "OtherTweaks", "misc_menukill.bat"),
+        ("https://drive.google.com/uc?export=download&id=1IOHG7nvRaRUhRKJNO17rDI3lcJixEOjz", "OtherTweaks", "clean_temp_files.bat"),
+        ("https://drive.google.com/uc?export=download&id=1VTPmwlx2kpxX5ih3EHrqojJNNzwPiDEq", "OtherTweaks", "cpu_tweaks.bat"),
+        ("https://drive.google.com/uc?export=download&id=1dddcaDEXm5SXmpgfd1M4k3t1Yko4LTTD", "OtherTweaks", "debloat_startup.bat"),
+        ("https://drive.google.com/uc?export=download&id=1yjkib-jG33zKmJlPN8BcLe39Cmtp0Lwi", "OtherTweaks", "debloat_reinstall.bat"),
+        ("https://drive.google.com/uc?export=download&id=1n3-6qY2Bp77aN9zmENaQL4iWIirs7Yxw", "OtherTweaks", "debloat_uninstall.bat"),
+        ("https://drive.google.com/uc?export=download&id=1IeqfXEYrfFqfdRKqDbCs9U2LjeQW_Whk", "OtherTweaks", "win_general_settings.bat"),
+        ("https://drive.google.com/uc?export=download&id=1b3bE_7JQehocV44FRLWTa3bT2wHkyM-L", "OtherTweaks", "win_block_updates.bat"),
+        ("https://drive.google.com/uc?export=download&id=17SgRofiYserf26VnCXNxw9BOCP9DQKyF", "OtherTweaks", "win_power_plan.bat"),
+        ("https://drive.google.com/uc?export=download&id=1XyYjpry1JHfINb5zg4X6fLZz_BVpMmnR", "OtherTweaks", "win_io_tweaks.bat"),
+        ("https://drive.google.com/uc?export=download&id=1GS8pMt5g2QzPck1ULXtZI-saDCZSkOnc", "OtherTweaks", "win_telemetry.bat")
+    };
+        // ... (All other 25 files using the 'uc?export=download&id=...' format) ...
+        // You MUST stick with your current list and apply the fix below!
+        private void PlaySound(string soundFileName)
+        {
+            try
+            {
+                // SoundPlayer is ideal for simple, one-shot sounds like WAV files.
+                SoundPlayer player = new SoundPlayer(soundFileName);
+
+                // This plays the sound file in the current folder (or path specified)
+                player.Play();
+            }
+            catch (Exception ex)
+            {
+                // It's good practice to catch errors, especially if the file path is wrong.
+                // For debugging, you could show a MessageBox with the error.
+                // MessageBox.Show($"Could not play sound: {ex.Message}");
+            }
+        }
+        private void RunBatchFile(string batFilePath)
+        {
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+
+                    // CRITICAL CHANGE: Use /c to execute the batch file. 
+                    // We ensure the full path is wrapped in quotes to handle any spaces.
+                    Arguments = $"/c \"{batFilePath}\"",
+
+                    UseShellExecute = true,
+
+                    // OPTIONAL: Setting this to true will hide the command prompt window entirely
+                    // Let's leave it as 'false' for now so you can see if it works.
+                    CreateNoWindow = false
+                };
+
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error running batch file {Path.GetFileName(batFilePath)}: {ex.Message}");
+            }
+        
+
+        }
         private void ExecuteBatchFile(string filePath, bool waitForExit)
         {
             // 1. Basic check to ensure the file exists before attempting to run
@@ -25,7 +118,7 @@ namespace FortniteTweaks
                 Arguments = $"/C \"{filePath}\"",
 
                 // UseShellExecute = false is generally better when running CMD/scripts
-                UseShellExecute = false,
+                UseShellExecute = true,
 
                 // Setting to false means the user will see the command prompt window.
                 // This is important for tweaks so the user can see the progress/output 
@@ -80,8 +173,16 @@ namespace FortniteTweaks
         {
             InitializeComponent();
             this.BackColor = Color.FromArgb(40, 40, 40);
+            // CRITICAL NETWORK FIX: Set modern security protocol
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
+            this.Shown += Form1_Load;
+
+            // Initialize the path where files will be saved
+            TemporaryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), TempFolderName);
 
         }
+        
+        
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -92,9 +193,41 @@ namespace FortniteTweaks
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            // Define the full disclaimer text
+            // 1. Initially disable all UI controls (buttons, menus, etc.) 
+            //    that rely on the downloaded files.
+            this.Enabled = false;
+
+            // Optional: Update a status label to show downloading in progress
+            // statusLabelOnMainForm.Text = "Downloading essential assets. Please wait...";
+
+            // 2. Await the download process and capture the result
+            bool success = await DownloadRequiredFilesAsync();
+
+            // 3. Re-enable controls if successful
+            this.Enabled = true;
+
+            if (success)
+            {
+                MessageBox.Show("All essential files downloaded successfully!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Optional: Update status label
+                // statusLabelOnMainForm.Text = "Assets ready. You can now use the tweaks.";
+            }
+            else
+            {
+                Application.Exit(); 
+            }
+            // TEMPORARY DEBUG CHECK:
+            if (filesToDownload == null || filesToDownload.Count == 0)
+            {
+                MessageBox.Show("The filesToDownload list is empty! Cannot start download.", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Enabled = true; // Re-enable to allow user to close
+                return;
+            }
+            // END TEMPORARY DEBUG CHECK
+
             string disclaimerText =
                 "*** CRITICAL WARNING AND DISCLAIMER ***\n\n" +
                 "This application makes deep, system-level modifications (Registry edits, Service changes, Network stack changes).\n\n" +
@@ -116,10 +249,100 @@ namespace FortniteTweaks
             // If the user clicks 'No', close the application immediately.
             if (result == DialogResult.No)
             {
-                this.Close(); // Close the form, which shuts down the application
+                Application.Exit(); // Close the form, which shuts down the application
             }
 
             // If the user clicks 'Yes', the application loads normally.
+        }
+        // ----------------------------------------------------------------------
+        // 2. THE RELIABLE DOWNLOAD LOGIC
+        // ----------------------------------------------------------------------
+        private async Task<bool> DownloadRequiredFilesAsync()
+        {
+            {
+
+                // ... (rest of the file creation and download logic)
+                // ... (rest of the file creation and download logic)
+                // NOTE: If you have UI elements (like a ProgressBar or Status Label)
+                // on your keyboardPack form that you want to update during the download,
+                // you MUST use 'this.Invoke(...)' inside this method.
+                // For simplicity now, we will use MessageBox to indicate success/failure.
+
+                try
+                {
+                    // 1. Ensure the root temporary directory exists
+                    if (!Directory.Exists(TemporaryPath))
+                    {
+                        Directory.CreateDirectory(TemporaryPath);
+                    }
+
+                    foreach (var file in filesToDownload)
+                    {
+                        // ...
+                        foreach (var (sourceUrl, subDirectory, targetFileName) in filesToDownload)
+                        {
+                            string sourceUrl = furl; // NO NEED to redefine the variables inside the loop anymore!
+                            // The variables sourceUrl, subDirectory, and targetFileName are now defined here.
+
+                            // Now you can use them directly without the 'file.' prefix:
+
+                            // CRITICAL GOOGLE DRIVE FIX:
+                            if (!sourceUrl.Contains("&confirm="))
+                            {
+                                sourceUrl += "&confirm=t";
+                            }
+
+                            // The failing line should now work:
+                            string finalDirectoryPath = Path.Combine(TemporaryPath, subDirectory);
+                            string targetPath = Path.Combine(finalDirectoryPath, targetFileName);
+
+                            // ... (rest of the logic) ...
+                        }
+                        
+                        
+                        // ... (keep the file download logic) ...
+
+                        // ... (rest of the successful download loop) ...
+
+                        filesCompleted++; // Track progress
+                    }
+
+                    // DO NOT show the message box here anymore. Just return success.
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // Change the MessageBox to show the detailed exception source and message.
+                    MessageBox.Show(
+                        $"Critical Download Error during initialization or file loop: {ex.Message}\n\n" +
+                        $"Source: {ex.Source}\n" +
+                        $"TargetSite: {ex.TargetSite?.Name}",
+                        "FATAL DOWNLOAD ERROR",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return false;
+
+                }
+                // TEMPORARY DEBUG CHECK:
+                MessageBox.Show("Download function started. Entering file loop now.", "Debug Step", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // END TEMPORARY DEBUG CHECK
+
+                try
+                {
+                    foreach (var file in filesToDownload)
+                    {
+                        // ... (rest of the loop) ...
+                    }
+
+                    // ... (return true) ...
+                }
+                catch (Exception ex)
+                {
+                    // ... (detailed error reporting from last step) ...
+                    return false;
+                }
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -184,8 +407,10 @@ namespace FortniteTweaks
 
         private void quit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
+            
+        
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -249,31 +474,39 @@ namespace FortniteTweaks
 
         private void controllerZeroDelay_Click(object sender, EventArgs e)
         {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\controller_0_delay.bat";
+            // Build the full path to the batch file in the temp folder
+            string batFilePath = Path.Combine(
+                TemporaryPath,
+                "LunchboxTweaks",
+                "controller_0_delay.bat"
+            );
 
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close). The CMD window will close after the 'pause' command is finished.
-            string arguments = $"/c \"{batchFileName}\"";
+            // Check if the file exists before running
+            if (!File.Exists(batFilePath))
+            {
+                MessageBox.Show($"Batch file not found:\n{batFilePath}", "File Missing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             try
             {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c \"{batFilePath}\"",
+                    WorkingDirectory = Path.GetDirectoryName(batFilePath),
+                    UseShellExecute = true,
+                    CreateNoWindow = false
+                };
 
                 Process.Start(startInfo);
 
-                MessageBox.Show("Controller 0 Delay script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // The batch file provides the final success message and pause, so we don't need a MessageBox here.
+                MessageBox.Show("Controller 0 Delay script has been launched. Please check the command window for completion.", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error running batch file {Path.GetFileName(batFilePath)}: {ex.Message}",
+                                "Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -623,12 +856,14 @@ namespace FortniteTweaks
             string setupFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OtherTweaks");
             string setupScriptPath = Path.Combine(setupFolderPath, "Setup.bat");
 
+
             // 1. Check if the file exists just in case (optional, but good practice)
             if (!File.Exists(setupScriptPath))
             {
                 MessageBox.Show("Error: Setup.bat file not found in the 'OtherTweaks' folder.",
                                 "File Missing", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+
             }
 
             // 2. Execute the existing Setup.bat file and wait for it to finish.
@@ -637,6 +872,8 @@ namespace FortniteTweaks
             {
                 // ExecuteBatchFile waits for the script to finish (or exit quickly)
                 ExecuteBatchFile(setupScriptPath, true);
+                OtherTweaks open = new OtherTweaks();
+                open.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -650,6 +887,67 @@ namespace FortniteTweaks
             // OtherTweaksForm tweaksForm = new OtherTweaksForm();
             // tweaksForm.Show();
             // this.Hide();
+        }
+
+        private void openDiscordServer_Click(object sender, EventArgs e)
+        {
+            // Define the URL you want to open
+            string url = "https://discord.gg/CdR6KVSpYv"; // Example: Your Discord link
+
+            // Optionally, you can add a try-catch block for robust error handling
+            try
+            {
+                // Use Process.Start to launch the default browser with the specified URL
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                // This catches errors like if the browser fails to launch or the link is invalid
+                MessageBox.Show($"Could not open the link: {url}\nError: {ex.Message}",
+                                "Browser Launch Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void minimizeButton_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void hoverSound(object sender, EventArgs e)
+        {
+            PlaySound("hover.wav");
+        }
+
+        private void hoverSoundDiscord(object sender, EventArgs e)
+        {
+            PlaySound("join-discord-server-hover.wav");
+        }
+
+        private void unhoverSoundDiscord(object sender, EventArgs e)
+        {
+            PlaySound("join-discord-server-unhovered.wav");
+        }
+
+        private void applyDiscordButton(object sender, MouseEventArgs e)
+        {
+            PlaySound("join-discord-server-hovered.wav");
+        }
+
+        private void applySound(object sender, MouseEventArgs e)
+        {
+            PlaySound("apply.wav");
         }
     }
 }

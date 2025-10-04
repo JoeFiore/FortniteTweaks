@@ -18,15 +18,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="apply.wav" />
     <None Remove="apply_all_tweaks.bat" />
     <None Remove="cleanup_advanced.bat" />
     <None Remove="controller_0_delay.bat" />
     <None Remove="controller_pack.bat" />
     <None Remove="fortnite_config.bat" />
+    <None Remove="hover.wav" />
+    <None Remove="join-discord-server-hover.wav" />
+    <None Remove="join-discord-server-hovered.wav" />
+    <None Remove="join-discord-server-unhovered.wav" />
+    <None Remove="keyboardclick.wav" />
     <None Remove="keyboard_0_delay.bat" />
     <None Remove="keyboard_pack.bat" />
     <None Remove="network_chooser.bat" />
+    <None Remove="OtherTweaks\clean_temp_files.bat" />
+    <None Remove="OtherTweaks\cpu_tweaks.bat" />
+    <None Remove="OtherTweaks\debloat_reinstall.bat" />
+    <None Remove="OtherTweaks\debloat_startup.bat" />
+    <None Remove="OtherTweaks\debloat_uninstall.bat" />
+    <None Remove="OtherTweaks\misc_menukill.bat" />
+    <None Remove="OtherTweaks\misc_msi_mode.bat" />
     <None Remove="OtherTweaks\Setup.bat" />
+    <None Remove="OtherTweaks\win_block_updates.bat" />
+    <None Remove="OtherTweaks\win_general_settings.bat" />
+    <None Remove="OtherTweaks\win_io_tweaks.bat" />
+    <None Remove="OtherTweaks\win_power_plan.bat" />
+    <None Remove="OtherTweaks\win_telemetry.bat" />
     <None Remove="reset_advanced_tweaks.bat" />
     <None Remove="reset_all_tweaks.bat" />
     <None Remove="restart_pc.bat" />
@@ -34,6 +52,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="join-discord-server-hovered.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="keyboardclick.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="LunchboxTweaks\fortnite_config.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -58,7 +82,43 @@
     <Content Include="LunchboxTweaks\network_chooser.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="OtherTweaks\clean_temp_files.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\cpu_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\debloat_reinstall.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\debloat_startup.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\debloat_uninstall.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\misc_menukill.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\misc_msi_mode.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="OtherTweaks\Setup.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\win_block_updates.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\win_general_settings.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\win_io_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\win_power_plan.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OtherTweaks\win_telemetry.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="PicturesToUploadToResources\logo.ico" />
@@ -93,6 +153,37 @@
 
   <ItemGroup>
     <Content Include="LunchboxTweaks\reset_advanced_tweaks.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Siticone.NetCore.UI" Version="2025.8.27.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="join-discord-server-hover.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="join-discord-server-unhovered.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Siticone.UI">
+      <HintPath>bin\Debug\net8.0-windows\Siticone.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="hover.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="apply.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
