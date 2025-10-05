@@ -117,13 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="warrning.Text" xml:space="preserve">
-    <value>⚠️ WARNING: These tweaks aren't made by us, but submitted by the community.
-be careful while using these tweaks as we might not be able to help you. We
-will try our best to assist you in these but its not guaranteed. Something that
-might help is a System Restore. You can create one below. To close this pop
-up click the X button above this prompt.
+  <data name="siticonePictureBox1.Images" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0
+        dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EEAQAAAIwBU3lzdGVtLkNv
+        bGxlY3Rpb25zLkdlbmVyaWMuTGlzdGAxW1tTeXN0ZW0uRHJhd2luZy5JbWFnZSwgU3lzdGVtLkRyYXdp
+        bmcsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMDNmNWY3
+        ZjExZDUwYTNhXV0DAAAABl9pdGVtcwVfc2l6ZQhfdmVyc2lvbgQAABZTeXN0ZW0uRHJhd2luZy5JbWFn
+        ZVtdAgAAAAgICQMAAAAAAAAAAAAAAAcDAAAAAAEAAAAAAAAABBRTeXN0ZW0uRHJhd2luZy5JbWFnZQIA
+        AAAL
 </value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>Code created by : Lunchbox
+UI created by: agentinfinity2
+
+You are using version 0.1.0
+
+DISCLAMIER: This software makes deep, system-level modifications (Registry edits, Service changes 
+Network stack changes.) Use of this software is at your own risk.
+ALWAYS create a System Restore Point before running any system tweaker, and use the "Reset"
+buttons to revert changes. You can use the Quick Actions menu to make a System Restore Point
+if you dont know how to.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

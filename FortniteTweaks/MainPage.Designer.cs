@@ -54,6 +54,7 @@
             button2 = new SiticoneNetCoreUI.SiticoneButton();
             credits = new SiticoneNetCoreUI.SiticoneButton();
             quit = new SiticoneNetCoreUI.SiticoneButton();
+            label4 = new Label();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -1627,12 +1628,24 @@
             quit.MouseClick += applySound;
             quit.MouseEnter += hoverSound;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Microsoft YaHei UI Light", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label4.ForeColor = Color.White;
+            label4.Location = new Point(333, 138);
+            label4.Name = "label4";
+            label4.Size = new Size(115, 16);
+            label4.TabIndex = 24;
+            label4.Text = "you are at: Main Page";
+            // 
             // keyboardPack
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(15, 15, 15);
             ClientSize = new Size(800, 578);
+            Controls.Add(label4);
             Controls.Add(quit);
             Controls.Add(credits);
             Controls.Add(button2);
@@ -1661,6 +1674,7 @@
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -1693,5 +1707,6 @@
         private SiticoneNetCoreUI.SiticoneButton button2;
         private SiticoneNetCoreUI.SiticoneButton credits;
         private SiticoneNetCoreUI.SiticoneButton quit;
+        private Label label4;
     }
 }

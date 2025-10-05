@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<AssemblyVersion>0.0.8</AssemblyVersion>
-	<FileVersion>0.0.8</FileVersion>
-	<Version>0.0.8</Version>
+	<AssemblyVersion>0.1.0</AssemblyVersion>
+	<FileVersion>0.1.0</FileVersion>
+	<Version>0.1.0</Version>
 
 	<Company>LUNCHBOX</Company>
 	<Product>LUNCHBOX Fortnite Tweaks</Product>
@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="join-discord-server-hovered.wav">
+    <Content Include="Sounds\join-discord-server-hovered.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="keyboardclick.wav">
@@ -159,13 +159,14 @@
 
   <ItemGroup>
     <PackageReference Include="Siticone.NetCore.UI" Version="2025.8.27.1" />
+    <PackageReference Include="System.Management" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="join-discord-server-hover.wav">
+    <Content Include="Sounds\join-discord-server-hover.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="join-discord-server-unhovered.wav">
+    <Content Include="Sounds\join-discord-server-unhovered.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -177,13 +178,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="hover.wav">
+    <Content Include="Sounds\hover.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="apply.wav">
+    <Content Include="Sounds\apply.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

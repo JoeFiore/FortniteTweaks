@@ -117,14 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="warrning.Text" xml:space="preserve">
-    <value>⚠️ WARNING: These tweaks aren't made by us, but submitted by the community.
-be careful while using these tweaks as we might not be able to help you. We
-will try our best to assist you in these but its not guaranteed. Something that
-might help is a System Restore. You can create one below. To close this pop
-up click the X button above this prompt.
-</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

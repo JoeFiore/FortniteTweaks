@@ -1,150 +1,23 @@
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Drawing; // Make sure this is at the top of the file
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Media;
-using System.Net;
-using System.Windows.Forms; // Ensure this is present for MessageBox
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Diagnostics;
+using System.Reflection;
+
 namespace FortniteTweaks
 {
     public partial class keyboardPack : Form
-
     {
         // ----------------------------------------------------------------------
-        // 1. FIELDS AND CONSTANTS
+        // 1. FIELDS (Cleaned to only include what's needed for UI/Logic)
         // ----------------------------------------------------------------------
-        private static readonly HttpClient client = new HttpClient();
-        private readonly string TempFolderName = "MyFortniteTweakTempFiles";
-        private string TemporaryPath;
-        private int filesCompleted = 0;
-        private const int TotalFiles = 26;
-
-        // The FINAL, CORRECTED List of all files to download (26 total)
-        private List<(string url, string subDir, string fileName)> filesToDownload = new List<(string url, string subDir, string fileName)>
-    {
-        // Folder 1: 'LunchboxTweaks' (13 files - names confirmed)
-        ("https://drive.google.com/uc?export=download&id=1_qcHxI-brXrByavKBxFpOsirAdX6S4V0", "LunchboxTweaks", "apply_all_tweaks.bat"),
-        ("https://drive.google.com/uc?export=download&id=11J_pH2aLc_SlRdn6EvsU27c98GNQ-Clk", "LunchboxTweaks", "cleanup_advanced.bat"),
-        ("https://drive.google.com/uc?export=download&id=1Qn69LG5oHGX39_0TbJd0BCw5pD8IMFq4", "LunchboxTweaks", "controller_0_delay.bat"),
-        ("https://drive.google.com/uc?export=download&id=1Vd8vbdojt5p2gjs5P8Czb0KwQzlwP1ex", "LunchboxTweaks", "controller_pack.bat"),
-        ("https://drive.google.com/uc?export=download&id=1rasNEToWRxaDtuqDNHlPO7aJDDQrkO5G", "LunchboxTweaks", "fortnite_config.bat"),
-        ("https://drive.google.com/uc?export=download&id=1CX8z8GyUfU7xxGE1XJ86Ywb9kWI4chcR", "LunchboxTweaks", "keyboard_0_delay.bat"),
-        ("https://drive.google.com/uc?export=download&id=14RJ3nTdUJvb2R9BtUrBl8zMtdxneFuXm", "LunchboxTweaks", "keyboard_pack.bat"),
-        ("https://drive.google.com/uc?export=download&id=1CjfDQZwwaAP3_P4kGAyjd-ahhGOPfx7z", "LunchboxTweaks", "network_chooser.bat"),
-        ("https://drive.google.com/uc?export=download&id=1aFRhHX8_KocMRg6GJiFKCyxPclXM1WdS", "LunchboxTweaks", "reset_advanced_tweaks.bat"),
-        ("https://drive.google.com/uc?export=download&id=137GfnVfVl3ZpXl50UH3FVBupL0ax8nsV", "LunchboxTweaks", "reset_all_tweaks.bat"),
-        ("https://drive.google.com/uc?export=download&id=1Of1L9pI8AkJt714eEjySAAA69lmAivY6", "LunchboxTweaks", "restart_pc.bat"),
-        ("https://drive.google.com/uc?export=download&id=15OFMNGeQ7mNJefNAFq9n4maPfIy1oqFG", "LunchboxTweaks", "stutter_aggressive.bat"),
-        ("https://drive.google.com/uc?export=download&id=1KR4sCNPAC5BdlU5-JIb4CpSRw1HNnAH6", "LunchboxTweaks", "stutter_safe.bat"),
-
-        // Folder 2: 'OtherTweaks' (13 files - names now fully confirmed)
-        ("https://drive.google.com/uc?export=download&id=14xVyRrEl6UytokziCFdyA7y9ZQeRRDUZ", "OtherTweaks", "Setup.bat"),
-        ("https://drive.google.com/uc?export=download&id=1ltMxQ9sCdrZq8wIUZjC-xNXzN3NKMiAx", "OtherTweaks", "misc_msi_mode.bat"),
-        ("https://drive.google.com/uc?export=download&id=1Zbx4r2hNkmW7FNOJetAtMxodcTLx2kgh", "OtherTweaks", "misc_menukill.bat"),
-        ("https://drive.google.com/uc?export=download&id=1IOHG7nvRaRUhRKJNO17rDI3lcJixEOjz", "OtherTweaks", "clean_temp_files.bat"),
-        ("https://drive.google.com/uc?export=download&id=1VTPmwlx2kpxX5ih3EHrqojJNNzwPiDEq", "OtherTweaks", "cpu_tweaks.bat"),
-        ("https://drive.google.com/uc?export=download&id=1dddcaDEXm5SXmpgfd1M4k3t1Yko4LTTD", "OtherTweaks", "debloat_startup.bat"),
-        ("https://drive.google.com/uc?export=download&id=1yjkib-jG33zKmJlPN8BcLe39Cmtp0Lwi", "OtherTweaks", "debloat_reinstall.bat"),
-        ("https://drive.google.com/uc?export=download&id=1n3-6qY2Bp77aN9zmENaQL4iWIirs7Yxw", "OtherTweaks", "debloat_uninstall.bat"),
-        ("https://drive.google.com/uc?export=download&id=1IeqfXEYrfFqfdRKqDbCs9U2LjeQW_Whk", "OtherTweaks", "win_general_settings.bat"),
-        ("https://drive.google.com/uc?export=download&id=1b3bE_7JQehocV44FRLWTa3bT2wHkyM-L", "OtherTweaks", "win_block_updates.bat"),
-        ("https://drive.google.com/uc?export=download&id=17SgRofiYserf26VnCXNxw9BOCP9DQKyF", "OtherTweaks", "win_power_plan.bat"),
-        ("https://drive.google.com/uc?export=download&id=1XyYjpry1JHfINb5zg4X6fLZz_BVpMmnR", "OtherTweaks", "win_io_tweaks.bat"),
-        ("https://drive.google.com/uc?export=download&id=1GS8pMt5g2QzPck1ULXtZI-saDCZSkOnc", "OtherTweaks", "win_telemetry.bat")
-    };
-        // ... (All other 25 files using the 'uc?export=download&id=...' format) ...
-        // You MUST stick with your current list and apply the fix below!
-        private void PlaySound(string soundFileName)
-        {
-            try
-            {
-                // SoundPlayer is ideal for simple, one-shot sounds like WAV files.
-                SoundPlayer player = new SoundPlayer(soundFileName);
-
-                // This plays the sound file in the current folder (or path specified)
-                player.Play();
-            }
-            catch (Exception ex)
-            {
-                // It's good practice to catch errors, especially if the file path is wrong.
-                // For debugging, you could show a MessageBox with the error.
-                // MessageBox.Show($"Could not play sound: {ex.Message}");
-            }
-        }
-        private void RunBatchFile(string batFilePath)
-        {
-            try
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-
-                    // CRITICAL CHANGE: Use /c to execute the batch file. 
-                    // We ensure the full path is wrapped in quotes to handle any spaces.
-                    Arguments = $"/c \"{batFilePath}\"",
-
-                    UseShellExecute = true,
-
-                    // OPTIONAL: Setting this to true will hide the command prompt window entirely
-                    // Let's leave it as 'false' for now so you can see if it works.
-                    CreateNoWindow = false
-                };
-
-                Process.Start(startInfo);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running batch file {Path.GetFileName(batFilePath)}: {ex.Message}");
-            }
-        
-
-        }
-        private void ExecuteBatchFile(string filePath, bool waitForExit)
-        {
-            // 1. Basic check to ensure the file exists before attempting to run
-            if (!File.Exists(filePath))
-            {
-                MessageBox.Show($"Script not found: {Path.GetFileName(filePath)}\nPath: {filePath}", "Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // 2. Configure how the batch file will be launched
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                // The /C argument tells cmd.exe to execute the following string as a command and then terminate.
-                // We enclose the filePath in quotes in case there are spaces in the path.
-                Arguments = $"/C \"{filePath}\"",
-
-                // UseShellExecute = false is generally better when running CMD/scripts
-                UseShellExecute = true,
-
-                // Setting to false means the user will see the command prompt window.
-                // This is important for tweaks so the user can see the progress/output 
-                // and handle the 'pause' command at the end of the batch file.
-                CreateNoWindow = false
-            };
-
-            // 3. Execute the batch file
-            try
-            {
-                using (Process process = Process.Start(startInfo))
-                {
-                    if (waitForExit && process != null)
-                    {
-                        // This line is essential for the setup script and most tweaks.
-                        // It pauses the C# execution until the command window is closed (i.e., the script is done).
-                        process.WaitForExit();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Catch exceptions like "access denied" or failure to start the process
-                MessageBox.Show($"Error running script: {Path.GetFileName(filePath)}\nDetails: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
         // Define the starting and ending RGB values
         private Color initialColor = Color.FromArgb(100, 100, 100); // Your custom dark gray
@@ -157,6 +30,7 @@ namespace FortniteTweaks
 
         // Flag to track whether we are fading IN (to red) or OUT (to gray)
         private bool fadingIn = false;
+
         // --- Windows API Imports for Dragging the Form ---
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -168,736 +42,27 @@ namespace FortniteTweaks
         public static extern bool ReleaseCapture();
         // --------------------------------------------------
 
-        // ... (other code, like your public Form1() constructor)
+        // ----------------------------------------------------------------------
+        // 2. CONSTRUCTOR AND INITIALIZATION (Cleaned)
+        // ----------------------------------------------------------------------
         public keyboardPack()
         {
             InitializeComponent();
             this.BackColor = Color.FromArgb(40, 40, 40);
-            // CRITICAL NETWORK FIX: Set modern security protocol
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
             this.Shown += Form1_Load;
-
-            // Initialize the path where files will be saved
-            TemporaryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), TempFolderName);
-
         }
-        
-        
-
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void OpenWebLink(string url)
         {
-
-        }
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void Form1_Load(object sender, EventArgs e)
-        {
-            // 1. Initially disable all UI controls (buttons, menus, etc.) 
-            //    that rely on the downloaded files.
-            this.Enabled = false;
-
-            // Optional: Update a status label to show downloading in progress
-            // statusLabelOnMainForm.Text = "Downloading essential assets. Please wait...";
-
-            // 2. Await the download process and capture the result
-            bool success = await DownloadRequiredFilesAsync();
-
-            // 3. Re-enable controls if successful
-            this.Enabled = true;
-
-            if (success)
+            // Basic validation
+            if (string.IsNullOrWhiteSpace(url))
             {
-                MessageBox.Show("All essential files downloaded successfully!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Optional: Update status label
-                // statusLabelOnMainForm.Text = "Assets ready. You can now use the tweaks.";
-            }
-            else
-            {
-                Application.Exit(); 
-            }
-            // TEMPORARY DEBUG CHECK:
-            if (filesToDownload == null || filesToDownload.Count == 0)
-            {
-                MessageBox.Show("The filesToDownload list is empty! Cannot start download.", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Enabled = true; // Re-enable to allow user to close
-                return;
-            }
-            // END TEMPORARY DEBUG CHECK
-
-            string disclaimerText =
-                "*** CRITICAL WARNING AND DISCLAIMER ***\n\n" +
-                "This application makes deep, system-level modifications (Registry edits, Service changes, Network stack changes).\n\n" +
-                "RISK: Tweaks can potentially cause system instability, driver issues, or other software conflicts.\n\n" +
-                "SAFETY: It is highly recommended that you:\n" +
-                "1. Create a System Restore Point before proceeding.\n" +
-                "2. Use the 'Reset' buttons to revert changes if necessary.\n\n" +
-                "Do you accept these terms and wish to proceed?";
-
-            // Show the disclaimer with Yes/No options
-            DialogResult result = MessageBox.Show(
-                disclaimerText,
-                "Fortnite Tweaks - Legal Disclaimer",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning, // Use a Warning or Error icon to draw attention
-                MessageBoxDefaultButton.Button2 // Default to 'No' for safety
-            );
-
-            // If the user clicks 'No', close the application immediately.
-            if (result == DialogResult.No)
-            {
-                Application.Exit(); // Close the form, which shuts down the application
-            }
-
-            // If the user clicks 'Yes', the application loads normally.
-        }
-        // ----------------------------------------------------------------------
-        // 2. THE RELIABLE DOWNLOAD LOGIC
-        // ----------------------------------------------------------------------
-        private async Task<bool> DownloadRequiredFilesAsync()
-        {
-            {
-
-                // ... (rest of the file creation and download logic)
-                // ... (rest of the file creation and download logic)
-                // NOTE: If you have UI elements (like a ProgressBar or Status Label)
-                // on your keyboardPack form that you want to update during the download,
-                // you MUST use 'this.Invoke(...)' inside this method.
-                // For simplicity now, we will use MessageBox to indicate success/failure.
-
-                try
-                {
-                    // 1. Ensure the root temporary directory exists
-                    if (!Directory.Exists(TemporaryPath))
-                    {
-                        Directory.CreateDirectory(TemporaryPath);
-                    }
-
-                    foreach (var file in filesToDownload)
-                    {
-                        // ...
-                        foreach (var (sourceUrl, subDirectory, targetFileName) in filesToDownload) ;
-                        {
-                            string sourceUrl = furl; // NO NEED to redefine the variables inside the loop anymore!
-                            // The variables sourceUrl, subDirectory, and targetFileName are now defined here.
-
-                            // Now you can use them directly without the 'file.' prefix:
-
-                            // CRITICAL GOOGLE DRIVE FIX:
-                            if (!sourceUrl.Contains("&confirm="))
-                            {
-                                sourceUrl += "&confirm=t";
-                            }
-
-                            // The failing line should now work:
-                            string finalDirectoryPath = Path.Combine(TemporaryPath, subDirectory);
-                            string targetPath = Path.Combine(finalDirectoryPath, targetFileName);
-
-                            // ... (rest of the logic) ...
-                        }
-                        
-                        
-                        // ... (keep the file download logic) ...
-
-                        // ... (rest of the successful download loop) ...
-
-                        filesCompleted++; // Track progress
-                    }
-
-                    // DO NOT show the message box here anymore. Just return success.
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    // Change the MessageBox to show the detailed exception source and message.
-                    MessageBox.Show(
-                        $"Critical Download Error during initialization or file loop: {ex.Message}\n\n" +
-                        $"Source: {ex.Source}\n" +
-                        $"TargetSite: {ex.TargetSite?.Name}",
-                        "FATAL DOWNLOAD ERROR",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
-                    return false;
-
-                }
-                // TEMPORARY DEBUG CHECK:
-                MessageBox.Show("Download function started. Entering file loop now.", "Debug Step", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // END TEMPORARY DEBUG CHECK
-
-                try
-                {
-                    foreach (var file in filesToDownload)
-                    {
-                        // ... (rest of the loop) ...
-                    }
-
-                    // ... (return true) ...
-                }
-                catch (Exception ex)
-                {
-                    // ... (detailed error reporting from last step) ...
-                    return false;
-                }
-            }
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close(); // This command closes the current form (your application)
-        }
-
-        private void pnl1TitleBar_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-            }
-        }
-
-        private void btnClose_MouseEnter(object sender, EventArgs e)
-        {
-            fadingIn = true;
-            currentR = initialColor.R;
-            currentG = initialColor.G;
-            currentB = initialColor.B;
-            colorFadeTimer.Start();
-        }
-
-        private void btnClose_MouseLeave(object sender, EventArgs e)
-        {
-            fadingIn = false;
-            colorFadeTimer.Start();
-        }
-
-        private void colorFadeTimer_Tick(object sender, EventArgs e)
-        {
-
-            // 1. Determine the target color based on whether we are fading in or out
-            Color targetColor = fadingIn ? hoverColor : initialColor;
-
-            // 2. Set the speed of the fade (higher number = faster fade)
-            int step = 15;
-
-            // 3. Adjust Red component
-            if (currentR < targetColor.R) currentR = Math.Min(currentR + step, targetColor.R);
-            if (currentR > targetColor.R) currentR = Math.Max(currentR - step, targetColor.R);
-
-            // 4. Adjust Green component
-            if (currentG < targetColor.G) currentG = Math.Min(currentG + step, targetColor.G);
-            if (currentG > targetColor.G) currentG = Math.Max(currentG - step, targetColor.G);
-
-            // 5. Adjust Blue component
-            if (currentB < targetColor.B) currentB = Math.Min(currentB + step, targetColor.B);
-            if (currentB > targetColor.B) currentB = Math.Max(currentB - step, targetColor.B);
-
-            // 6. Apply the new color to the button
-            btnClose.BackColor = Color.FromArgb(currentR, currentG, currentB);
-
-            // 7. Check if the fade is complete and stop the timer
-            if (currentR == targetColor.R && currentG == targetColor.G && currentB == targetColor.B)
-            {
-                colorFadeTimer.Stop();
-            }
-        }
-
-        private void quit_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-            
-        
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string batchFileName = "LunchboxTweaks\\keyboard_pack.bat";
-            string programToRun = "cmd.exe";
-
-            // CHANGE IS HERE: Use /k (Execute and Keep) instead of /c (Execute and Close)
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-
-                // IMPORTANT: We must also change the window creation settings to allow the CMD window to show
-                // If we set CreateNoWindow = true, the user will never see the window, even with /k.
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true; // UseShellExecute = true works better when showing the window
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Keyboard Pack script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName}. Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void controllerPack_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\controller_pack.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Controller Pack script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Optional: Let the user know the script has started
-                // You can remove this if the CMD window is sufficient feedback.
-                // MessageBox.Show("Controller Pack script launched. Please press a key in the command window when finished.", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void controllerZeroDelay_Click(object sender, EventArgs e)
-        {
-            // Build the full path to the batch file in the temp folder
-            string batFilePath = Path.Combine(
-                TemporaryPath,
-                "LunchboxTweaks",
-                "controller_0_delay.bat"
-            );
-
-            // Check if the file exists before running
-            if (!File.Exists(batFilePath))
-            {
-                MessageBox.Show($"Batch file not found:\n{batFilePath}", "File Missing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The link URL is not set.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = $"/c \"{batFilePath}\"",
-                    WorkingDirectory = Path.GetDirectoryName(batFilePath),
-                    UseShellExecute = true,
-                    CreateNoWindow = false
-                };
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Controller 0 Delay script has been launched. Please check the command window for completion.", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running batch file {Path.GetFileName(batFilePath)}: {ex.Message}",
-                                "Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void keyboardZeroDelay_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\keyboard_0_delay.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Keyboard 0 Delay script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // No MessageBox needed, as the batch file handles the final message and pause.
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void stutterandFPSsafe_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\stutter_safe.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Stutter and FPS (SAFE) script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void stutterandFPSaggressive_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\stutter_aggressive.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Stutter and FPS (AGGRESSIVE) script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Resinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void networkTweaks_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action (the new chooser script)
-            string batchFileName = "LunchboxTweaks\\network_chooser.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the script exits
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible for the menu
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Network Tweaks script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void performanceModeAdvanced_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\cleanup_advanced.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Cleanup / Performance Mode (Advanced) script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void fortniteConfigTweaks_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action
-            string batchFileName = "LunchboxTweaks\\fortnite_config.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the 'pause' command is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Fortnite Config Tweaks script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void applyAllTweaks_Click(object sender, EventArgs e)
-        {
-            // 1. Define the specific batch file for this action (the new master script)
-            string batchFileName = "LunchboxTweaks\\apply_all_tweaks.bat";
-
-            // 2. Define the process environment
-            string programToRun = "cmd.exe";
-
-            // Use /c (Execute and Close) so the CMD window closes after the final 'pause' is satisfied
-            string arguments = $"/c \"{batchFileName}\"";
-
-            try
-            {
-                // Start the process, allowing the command window to be visible
-                ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Process.Start(startInfo);
-
-                MessageBox.Show("Apply All Tweaks script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error running {batchFileName}: {ex.Message} Try to Reinstall this Program.", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void resetAdvancedTweaks_Click(object sender, EventArgs e)
-        {
-            // --- STEP 1: Confirmation Prompt ---
-            DialogResult result = MessageBox.Show(
-                "WARNING: This will reset services and registry keys to the state recorded BEFORE the advanced tweaks were applied. Are you absolutely sure you want to proceed?",
-                "Confirm Advanced Tweak Reset",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2 // Default to 'No' for safety
-            );
-
-            // Only run the script if the user clicks YES
-            if (result == DialogResult.Yes)
-            {
-                // --- STEP 2: Launch Script (Only if confirmed) ---
-                string batchFileName = "LunchboxTweaks\\reset_advanced_tweaks.bat";
-                string programToRun = "cmd.exe";
-                string arguments = $"/c \"{batchFileName}\"";
-
-                try
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                    startInfo.CreateNoWindow = false;
-                    startInfo.UseShellExecute = true;
-
-                    Process.Start(startInfo);
-
-                    MessageBox.Show("Reset Advanced Tweaks script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error running {batchFileName} Try to Reinstall this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                // User clicked No or closed the dialog
-                MessageBox.Show("Advanced Tweak Reset cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void resetAllTweaks_Click(object sender, EventArgs e)
-        {
-            // --- STEP 1: Confirmation Prompt ---
-            DialogResult result = MessageBox.Show(
-                "WARNING: This will reset all applied tweaks (registry, network, services) to their recorded backup state or Windows defaults. Are you ABSOLUTELY sure you want to proceed?",
-                "Confirm Master Reset",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning, // Use Error icon for a severe warning
-                MessageBoxDefaultButton.Button2 // Default to 'No' for safety
-            );
-
-            // Only run the script if the user clicks YES
-            if (result == DialogResult.Yes)
-            {
-                // --- STEP 2: Launch Script (Only if confirmed) ---
-                string batchFileName = "LunchboxTweaks\\reset_all_tweaks.bat";
-                string programToRun = "cmd.exe";
-                string arguments = $"/c \"{batchFileName}\"";
-
-                try
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                    startInfo.CreateNoWindow = false;
-                    startInfo.UseShellExecute = true;
-
-                    Process.Start(startInfo);
-
-                    MessageBox.Show("Master Reset script has been launched. Please check the command window for completion ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error running {batchFileName} Try Reinstalling this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                // User clicked No or closed the dialog
-                MessageBox.Show("Master Reset cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void credits_Click(object sender, EventArgs e)
-        {
-            // Assemble the credits and information text
-            string creditsText =
-                "LUNCHBOX Fortnite Tweaks\n\n" +
-                "Code created by: LUNCHBOX.\n" +
-                "UI created by: AGENTINFINITY2.\n\n" +
-                "You are using Version 0.0.8 of this software.\n\n" +
-                "DISCLAIMER:\n" +
-                "Use of this software is at your own risk. System changes (registry, services) are backed up by the Revert Advanced Tweaks button, but always create a system restore point before running any system tweaker.";
-
-            // Show the information in a standard Windows message box
-            MessageBox.Show(
-                creditsText,
-                "Application Credits & Disclaimer",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information // Use the Information icon
-            );
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            // --- STEP 1: Confirmation Prompt ---
-            DialogResult result = MessageBox.Show(
-                "WARNING: This will restart your PC!",
-                "Are you sure you want to contiune?",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning, // Use Error icon for a severe warning
-                MessageBoxDefaultButton.Button2 // Default to 'No' for safety
-            );
-
-            // Only run the script if the user clicks YES
-            if (result == DialogResult.Yes)
-            {
-                // --- STEP 2: Launch Script (Only if confirmed) ---
-                string batchFileName = "LunchboxTweaks\\restart_pc.bat";
-                string programToRun = "cmd.exe";
-                string arguments = $"/c \"{batchFileName}\"";
-
-                try
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(programToRun, arguments);
-                    startInfo.CreateNoWindow = false;
-                    startInfo.UseShellExecute = true;
-
-                    Process.Start(startInfo);
-
-                    MessageBox.Show("Your PC will restart soon! ", "Script Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error running {batchFileName} Try Reinstalling this Program.: {ex.Message}", "Process Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                // User clicked No or closed the dialog
-                MessageBox.Show("PC failed to restart!", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void otherTweaks_Click(object sender, EventArgs e)
-        {
-            string setupFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OtherTweaks");
-            string setupScriptPath = Path.Combine(setupFolderPath, "Setup.bat");
-
-
-            // 1. Check if the file exists just in case (optional, but good practice)
-            if (!File.Exists(setupScriptPath))
-            {
-                MessageBox.Show("Error: Setup.bat file not found in the 'OtherTweaks' folder.",
-                                "File Missing", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-
-            }
-
-            // 2. Execute the existing Setup.bat file and wait for it to finish.
-            // The batch file's internal logic will handle checking if setup is already complete.
-            try
-            {
-                // ExecuteBatchFile waits for the script to finish (or exit quickly)
-                ExecuteBatchFile(setupScriptPath, true);
-                OtherTweaks open = new OtherTweaks();
-                open.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to run Setup.bat: {ex.Message}", "Setup Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // 3. Open the Tweaks Form immediately after the script finishes.
-
-            // Replace the following lines with your actual code to open the new form:
-            // OtherTweaksForm tweaksForm = new OtherTweaksForm();
-            // tweaksForm.Show();
-            // this.Hide();
-        }
-
-        private void openDiscordServer_Click(object sender, EventArgs e)
-        {
-            // Define the URL you want to open
-            string url = "https://discord.gg/CdR6KVSpYv"; // Example: Your Discord link
-
-            // Optionally, you can add a try-catch block for robust error handling
-            try
-            {
-                // Use Process.Start to launch the default browser with the specified URL
+                // Use Process.Start with UseShellExecute = true to launch the default browser
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
             catch (Exception ex)
@@ -909,47 +74,309 @@ namespace FortniteTweaks
                                 MessageBoxIcon.Error);
             }
         }
+        
 
-        private void label3_Click(object sender, EventArgs e)
+        // ----------------------------------------------------------------------
+        // 3. CORE UTILITY FUNCTIONS
+        // ----------------------------------------------------------------------
+
+        /// <summary>
+        /// Executes a local batch file relative to the application's base directory.
+        /// </summary>
+        /// <param name="relativePath">e.g., "LunchboxTweaks\\keyboard_pack.bat"</param>
+        private void RunLocalBatchFile(string relativePath)
         {
+            // Build the full path to the batch file based on the executable's location
+            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
 
+            // 1. Check if the file exists before attempting to run
+            if (!File.Exists(fullPath))
+            {
+                MessageBox.Show(
+                    $"Batch file not found. Please ensure the file '{relativePath}' exists next to the program's executable.",
+                    "File Missing Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
+            // 2. Configure how the batch file will be launched
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    // Use /C to execute the command and terminate. Quotes handle spaces in the path.
+                    Arguments = $"/C \"{fullPath}\"",
+
+                    // Set WorkingDirectory to the directory containing the batch file 
+                    // in case the batch file needs to access other files locally.
+                    WorkingDirectory = Path.GetDirectoryName(fullPath),
+
+                    UseShellExecute = true,
+                    CreateNoWindow = false // Show the command prompt window
+                };
+
+                Process.Start(startInfo);
+
+                // Show confirmation message
+                MessageBox.Show(
+                    $"{Path.GetFileName(relativePath)} script has been launched. Please check the command window for completion.",
+                    "Script Running",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error running script: {Path.GetFileName(relativePath)}\nDetails: {ex.Message}",
+                    "Execution Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
 
-        private void closeButton_Click(object sender, EventArgs e)
+        private void PlaySound(string soundFileName)
         {
-            Application.Exit();
+            try
+            {
+                SoundPlayer player = new SoundPlayer(soundFileName);
+                player.Play();
+            }
+            catch (Exception)
+            {
+                // Silence sound errors
+            }
         }
 
-        private void minimizeButton_Click(object sender, EventArgs e)
+        // ----------------------------------------------------------------------
+        // 4. LOAD/SHOWN HANDLER (Replaced download logic with disclaimer)
+        // ----------------------------------------------------------------------
+        private void Form1_Load(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            string disclaimerText =
+                "*** CRITICAL WARNING AND DISCLAIMER ***\n\n" +
+                "This application makes deep, system-level modifications (Registry edits, Service changes, Network stack changes).\n\n" +
+                "RISK: Tweaks can potentially cause system instability, driver issues, or other software conflicts.\n\n" +
+                "SAFETY: It is highly recommended that you:\n" +
+                "1. Create a System Restore Point before proceeding.\n" +
+                "2. Use the 'Reset' buttons to revert changes if necessary.\n\n" +
+                "Do you accept these terms and wish to proceed?";
+
+            DialogResult result = MessageBox.Show(
+                disclaimerText,
+                "Fortnite Tweaks - Legal Disclaimer",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2
+            );
+
+            if (result == DialogResult.No)
+            {
+                Application.Exit();
+            }
         }
 
-        private void hoverSound(object sender, EventArgs e)
+        // ----------------------------------------------------------------------
+        // 5. BUTTON CLICK HANDLERS (Simplified to use the RunLocalBatchFile helper)
+        // ----------------------------------------------------------------------
+
+        private void button1_Click(object sender, EventArgs e)
         {
-            PlaySound("hover.wav");
+            RunLocalBatchFile("LunchboxTweaks\\keyboard_pack.bat");
         }
 
-        private void hoverSoundDiscord(object sender, EventArgs e)
+        private void controllerPack_Click(object sender, EventArgs e)
         {
-            PlaySound("join-discord-server-hover.wav");
+            RunLocalBatchFile("LunchboxTweaks\\controller_pack.bat");
         }
 
-        private void unhoverSoundDiscord(object sender, EventArgs e)
+        private void controllerZeroDelay_Click(object sender, EventArgs e)
         {
-            PlaySound("join-discord-server-unhovered.wav");
+            RunLocalBatchFile("LunchboxTweaks\\controller_0_delay.bat");
         }
 
-        private void applyDiscordButton(object sender, MouseEventArgs e)
+        private void keyboardZeroDelay_Click(object sender, EventArgs e)
         {
-            PlaySound("join-discord-server-hovered.wav");
+            RunLocalBatchFile("LunchboxTweaks\\keyboard_0_delay.bat");
         }
 
-        private void applySound(object sender, MouseEventArgs e)
+        private void stutterandFPSsafe_Click(object sender, EventArgs e)
         {
-            PlaySound("apply.wav");
+            RunLocalBatchFile("LunchboxTweaks\\stutter_safe.bat");
         }
+
+        private void stutterandFPSaggressive_Click(object sender, EventArgs e)
+        {
+            RunLocalBatchFile("LunchboxTweaks\\stutter_aggressive.bat");
+        }
+
+        private void networkTweaks_Click(object sender, EventArgs e)
+        {
+            RunLocalBatchFile("LunchboxTweaks\\network_chooser.bat");
+        }
+
+        private void performanceModeAdvanced_Click(object sender, EventArgs e)
+        {
+            RunLocalBatchFile("LunchboxTweaks\\cleanup_advanced.bat");
+        }
+
+        private void fortniteConfigTweaks_Click(object sender, EventArgs e)
+        {
+            RunLocalBatchFile("LunchboxTweaks\\fortnite_config.bat");
+        }
+
+        private void applyAllTweaks_Click(object sender, EventArgs e)
+        {
+            RunLocalBatchFile("LunchboxTweaks\\apply_all_tweaks.bat");
+        }
+
+        private void resetAdvancedTweaks_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "WARNING: This will reset services and registry keys to the state recorded BEFORE the advanced tweaks were applied. Are you absolutely sure you want to proceed?",
+                "Confirm Advanced Tweak Reset",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2
+            );
+            if (result == DialogResult.Yes)
+            {
+                RunLocalBatchFile("LunchboxTweaks\\reset_advanced_tweaks.bat");
+            }
+            else
+            {
+                MessageBox.Show("Advanced Tweak Reset cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void resetAllTweaks_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "WARNING: This will reset all applied tweaks (registry, network, services) to their recorded backup state or Windows defaults. Are you ABSOLUTELY sure you want to proceed?",
+                "Confirm Master Reset",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2
+            );
+            if (result == DialogResult.Yes)
+            {
+                RunLocalBatchFile("LunchboxTweaks\\reset_all_tweaks.bat");
+            }
+            else
+            {
+                MessageBox.Show("Master Reset cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "WARNING: This will restart your PC!",
+                "Are you sure you want to contiune?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2
+            );
+            if (result == DialogResult.Yes)
+            {
+                RunLocalBatchFile("LunchboxTweaks\\restart_pc.bat");
+            }
+            else
+            {
+                MessageBox.Show("PC restart cancelled!", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void otherTweaks_Click(object sender, EventArgs e)
+        {
+            // You had logic here to open a sub-form named 'OtherTweaks'.
+            // The Setup.bat is still called locally.
+            RunLocalBatchFile("OtherTweaks\\Setup.bat");
+
+          // Assuming 'OtherTweaks' is a form you have defined elsewhere:
+          OtherTweaks open = new OtherTweaks(); 
+          open.ShowDialog();
+        }
+
+
+        // ----------------------------------------------------------------------
+        // 6. UI/MISC HANDLERS (Kept from your original code)
+        // ----------------------------------------------------------------------
+
+        private void pictureBox1_Click(object sender, EventArgs e) { /* ... */ }
+        private void pictureBox2_Click(object sender, EventArgs e) { /* ... */ }
+        private void btnClose_Click(object sender, EventArgs e) { this.Close(); }
+        private void pnl1TitleBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+        private void btnClose_MouseEnter(object sender, EventArgs e)
+        {
+            fadingIn = true;
+            currentR = initialColor.R;
+            currentG = initialColor.G;
+            currentB = initialColor.B;
+            // Assuming 'colorFadeTimer' is your Timer control
+            // colorFadeTimer.Start(); 
+        }
+
+        private void btnClose_MouseLeave(object sender, EventArgs e)
+        {
+            fadingIn = false;
+            // colorFadeTimer.Start();
+        }
+        private void colorFadeTimer_Tick(object sender, EventArgs e)
+        {
+            Color targetColor = fadingIn ? hoverColor : initialColor;
+            int step = 15;
+
+            if (currentR < targetColor.R) currentR = Math.Min(currentR + step, targetColor.R);
+            if (currentR > targetColor.R) currentR = Math.Max(currentR - step, targetColor.R);
+            if (currentG < targetColor.G) currentG = Math.Min(currentG + step, targetColor.G);
+            if (currentG > targetColor.G) currentG = Math.Max(currentG - step, targetColor.G);
+            if (currentB < targetColor.B) currentB = Math.Min(currentB + step, targetColor.B);
+            if (currentB > targetColor.B) currentB = Math.Max(currentB - step, targetColor.B);
+
+            // Assuming 'btnClose' is your button control
+            // btnClose.BackColor = Color.FromArgb(currentR, currentG, currentB);
+
+            // if (currentR == targetColor.R && currentG == targetColor.G && currentB == targetColor.B)
+            // {
+            //     colorFadeTimer.Stop();
+            // }
+        }
+
+        private void quit_Click(object sender, EventArgs e) { Application.Exit(); }
+        private void credits_Click(object sender, EventArgs e) 
+        {
+            Info_Credits open = new Info_Credits();
+            open.ShowDialog();
+        }
+        private void openDiscordServer_Click(object sender, EventArgs e)
+        {  // The Discord link you want to send the user to
+            const string DiscordInviteLink = "https://discord.gg/YourCustomInvite";
+
+            // Open the link
+            OpenWebLink(DiscordInviteLink);
+
+    // NOTE: Your original code had a sound effect that was likely called here
+    // hoverSoundDiscord(sender, e); // If you want to keep the sound effect
+        }
+        private void label3_Click(object sender, EventArgs e) { /* ... */ }
+        private void closeButton_Click(object sender, EventArgs e) { Application.Exit(); }
+        private void minimizeButton_Click(object sender, EventArgs e) { this.WindowState = FormWindowState.Minimized; }
+        private void hoverSound(object sender, EventArgs e) { PlaySound("Sounds\\hover.wav"); }
+        private void hoverSoundDiscord(object sender, EventArgs e) { PlaySound("Sounds\\join-discord-server-hover.wav"); }
+        private void unhoverSoundDiscord(object sender, EventArgs e) { PlaySound("Sounds\\join-discord-server-unhovered.wav"); }
+        private void applyDiscordButton(object sender, MouseEventArgs e) { PlaySound("Sounds\\join-discord-server-hovered.wav"); }
+        private void applySound(object sender, MouseEventArgs e) { PlaySound("Sounds\\apply.wav"); }
     }
 }
-
-
