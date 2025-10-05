@@ -17,10 +17,6 @@ namespace FortniteTweaks
             InitializeComponent();
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void siticoneButton1_Click(object sender, EventArgs e)
         {

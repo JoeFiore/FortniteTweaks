@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Management;
 using System.Media;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +14,18 @@ namespace FortniteTweaks
 {
     public partial class QuickActions : Form
     {
+
+        public QuickActions()
+        {
+            InitializeComponent();
+
+            // Set the form to be borderless for the custom border to work
+            this.FormBorderStyle = FormBorderStyle.None;
+            // Set the background color (e.g., a dark theme)
+            this.BackColor = Color.FromArgb(40, 40, 40);
+        }
+        
+
         private void OpenWebLink(string url)
         {
             // Basic validation
@@ -44,26 +55,23 @@ namespace FortniteTweaks
         private async Task<bool> CreateRestorePointAsync(string description)
         {
             // The WMI class for System Restore
-            ManagementScope scope = new ManagementScope("\\\\.\\root\\default");
-            ManagementPath path = new ManagementPath("SystemRestore");
+            // *** USE FQN HERE ***
+            System.Management.ManagementScope scope = new System.Management.ManagementScope("\\\\.\\root\\default");
+            System.Management.ManagementPath path = new System.Management.ManagementPath("SystemRestore");
 
             // The arguments for the CreateRestorePoint method
-            // 0x14 = APPLICATION_INSTALL (A named event for System Restore)
-            // 0x64 = BEGIN_SYSTEM_CHANGE (Marks the start of a multi-step operation)
             object[] args = new object[] { description, 0x14, 0x64 };
 
             try
             {
                 // 1. Get the WMI class definition
-                using (ManagementClass sysRestore = new ManagementClass(scope, path, null))
+                // *** USE FQN HERE ***
+                using (System.Management.ManagementClass sysRestore = new System.Management.ManagementClass(scope, path, null))
                 {
                     // 2. Execute the CreateRestorePoint method
                     await Task.Run(() =>
                     {
                         sysRestore.InvokeMethod("CreateRestorePoint", args);
-                        // NOTE: The WMI call completes when the restore point CREATION is initiated, 
-                        // but the actual disk writing continues in the background.
-                        // We trust Windows to complete the task and return true.
                     });
 
                     return true;
@@ -71,10 +79,8 @@ namespace FortniteTweaks
             }
             catch (Exception ex)
             {
-                // Catch WMI errors (e.g., VSS service disabled, insufficient permissions)
-                MessageBox.Show($"Failed to create restore point: {ex.Message}\n\n" +
-                                "Please ensure the System Restore Service is enabled for your C: drive.",
-                                "Restore Point Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // ... (rest of the catch block is unchanged)
+                // ...
                 return false;
             }
         }
@@ -82,17 +88,7 @@ namespace FortniteTweaks
         // 1. FIELDS AND CONSTANTS
         // ----------------------------------------------------------------------
 
-        // Timer for cycling the color
-        private System.Windows.Forms.Timer rainbowTimer;
-
-        // Color components for the border
-        private int colorR = 255;
-        private int colorG = 0;
-        private int colorB = 0;
-        private int colorStep = 5; // Speed of the color change
-        private int colorState = 0; // State machine for the color cycle (0 to 5)
-        private const int BorderThickness = 3; // Thickness in pixels
-
+        
         // --- Windows API Imports for Dragging the Borderless Form ---
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -107,94 +103,20 @@ namespace FortniteTweaks
         // ----------------------------------------------------------------------
         // 2. CONSTRUCTOR AND INITIALIZATION
         // ----------------------------------------------------------------------
-        public QuickActions()
-        {
-            InitializeComponent();
-
-            // Set the form to be borderless for the custom border to work
-            this.FormBorderStyle = FormBorderStyle.None;
-            // Set the background color (e.g., a dark theme)
-            this.BackColor = Color.FromArgb(40, 40, 40);
-
-            // Enable double buffering to reduce flickering during drawing/color change
-            this.DoubleBuffered = true;
-
-            // Initialize and start the Rainbow Border Timer
-            rainbowTimer = new System.Windows.Forms.Timer();
-            rainbowTimer.Interval = 50; // Update color every 50 milliseconds (adjust for speed)
-            rainbowTimer.Tick += RainbowTimer_Tick;
-            rainbowTimer.Start();
-        }
-
-
-        // ----------------------------------------------------------------------
-        // 3. COLOR CYCLING LOGIC
-        // ----------------------------------------------------------------------
-        private void RainbowTimer_Tick(object sender, EventArgs e)
-        {
-            // This logic smoothly cycles the color through the 6 main color transitions
-            switch (colorState)
-            {
-                case 0: // R is max, G goes up
-                    colorG += colorStep;
-                    if (colorG >= 255) { colorG = 255; colorState = 1; }
-                    break;
-                case 1: // G is max, R goes down
-                    colorR -= colorStep;
-                    if (colorR <= 0) { colorR = 0; colorState = 2; }
-                    break;
-                case 2: // G is max, B goes up
-                    colorB += colorStep;
-                    if (colorB >= 255) { colorB = 255; colorState = 3; }
-                    break;
-                case 3: // B is max, G goes down
-                    colorG -= colorStep;
-                    if (colorG <= 0) { colorG = 0; colorState = 4; }
-                    break;
-                case 4: // B is max, R goes up
-                    colorR += colorStep;
-                    if (colorR >= 255) { colorR = 255; colorState = 5; }
-                    break;
-                case 5: // R is max, B goes down
-                    colorB -= colorStep;
-                    if (colorB <= 0) { colorB = 0; colorState = 0; }
-                    break;
-            }
-
-            // Invalidate forces the form to call OnPaint (step 4) to redraw the border
-            this.Invalidate();
-        }
-
+        
 
         // ----------------------------------------------------------------------
         // 4. BORDER DRAWING LOGIC
         // ----------------------------------------------------------------------
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            // Create a Pen with the current rainbow color and thickness
-            Color borderColor = Color.FromArgb(colorR, colorG, colorB);
-            using (Pen borderPen = new Pen(borderColor, BorderThickness))
-            {
-                // Define the area to draw the border (the form's edge)
-                Rectangle borderRect = new Rectangle(
-                    BorderThickness / 2,
-                    BorderThickness / 2,
-                    this.Width - 3,
-                    this.Height - 3
-                );
-
-                // Draw the border rectangle
-                e.Graphics.DrawRectangle(borderPen, borderRect);
-            }
-        }
+       
         private void PlaySound(string soundFileName)
         {
             try
             {
+                
                 SoundPlayer player = new SoundPlayer(soundFileName);
                 player.Play();
+                
             }
             catch (Exception)
             {
@@ -274,10 +196,7 @@ namespace FortniteTweaks
             PlaySound("Sounds\\hover.wav");
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void closeFortnite_Click(object sender, EventArgs e)
         {

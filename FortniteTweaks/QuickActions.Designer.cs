@@ -257,12 +257,11 @@
             label4.AutoSize = true;
             label4.Font = new Font("Microsoft YaHei UI Light", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label4.ForeColor = Color.White;
-            label4.Location = new Point(335, 131);
+            label4.Location = new Point(349, 131);
             label4.Name = "label4";
             label4.Size = new Size(129, 16);
             label4.TabIndex = 23;
             label4.Text = "you are at: Quick Actions";
-            label4.Click += label4_Click;
             // 
             // launchTweaks
             // 

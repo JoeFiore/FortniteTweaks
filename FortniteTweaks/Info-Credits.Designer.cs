@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Info_Credits));
             label4 = new Label();
             label1 = new Label();
-            siticonePictureBox1 = new SiticoneNetCoreUI.SiticonePictureBox();
             label2 = new Label();
             siticoneButton1 = new SiticoneNetCoreUI.SiticoneButton();
             SuspendLayout();
@@ -41,72 +40,29 @@
             label4.AutoSize = true;
             label4.Font = new Font("Microsoft YaHei UI Light", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label4.ForeColor = Color.White;
-            label4.Location = new Point(176, 35);
+            label4.Location = new Point(51, 25);
             label4.Name = "label4";
             label4.Size = new Size(142, 16);
             label4.TabIndex = 26;
             label4.Text = "you are at: Info and Credits";
-            label4.Click += label4_Click;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Microsoft YaHei UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(126, 9);
+            label1.Location = new Point(1, -1);
             label1.Name = "label1";
             label1.Size = new Size(262, 26);
             label1.TabIndex = 24;
             label1.Text = "Lunchbox Fortnite Tweaks";
-            // 
-            // siticonePictureBox1
-            // 
-            siticonePictureBox1.BackColor = Color.FromArgb(30, 0, 0, 0);
-            siticonePictureBox1.BorderColor = Color.Black;
-            siticonePictureBox1.BorderWidth = 1;
-            siticonePictureBox1.Brightness = 1F;
-            siticonePictureBox1.Contrast = 1F;
-            siticonePictureBox1.CornerRadius = 0;
-            siticonePictureBox1.DraggingSpeed = 3.15F;
-            siticonePictureBox1.EnableAsyncLoading = false;
-            siticonePictureBox1.EnableCaching = false;
-            siticonePictureBox1.EnableDragDrop = false;
-            siticonePictureBox1.EnableExtendedImageSources = false;
-            siticonePictureBox1.EnableFilters = false;
-            siticonePictureBox1.EnableFlipping = false;
-            siticonePictureBox1.EnableGlow = false;
-            siticonePictureBox1.EnableHighDpiSupport = false;
-            siticonePictureBox1.EnableMouseInteraction = false;
-            siticonePictureBox1.EnablePlaceholder = false;
-            siticonePictureBox1.EnableRotation = false;
-            siticonePictureBox1.EnableShadow = false;
-            siticonePictureBox1.EnableSlideshow = false;
-            siticonePictureBox1.FlipHorizontal = false;
-            siticonePictureBox1.FlipVertical = false;
-            siticonePictureBox1.Grayscale = false;
-            siticonePictureBox1.Image = Properties.Resources.logopic;
-            siticonePictureBox1.ImageOpacity = 1F;
-            siticonePictureBox1.Images = (List<Image>)resources.GetObject("siticonePictureBox1.Images");
-            siticonePictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            siticonePictureBox1.IsCircular = false;
-            siticonePictureBox1.Location = new Point(0, 0);
-            siticonePictureBox1.MaintainAspectRatio = true;
-            siticonePictureBox1.Name = "siticonePictureBox1";
-            siticonePictureBox1.PlaceholderImage = null;
-            siticonePictureBox1.RotationAngle = 0F;
-            siticonePictureBox1.Saturation = 1F;
-            siticonePictureBox1.ShowBorder = true;
-            siticonePictureBox1.Size = new Size(120, 120);
-            siticonePictureBox1.SizeMode = SiticoneNetCoreUI.Helpers.Enum.SiticonePictureBoxSizeMode.StretchImage;
-            siticonePictureBox1.TabIndex = 27;
-            siticonePictureBox1.Text = "siticonePictureBox1";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Microsoft YaHei UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label2.ForeColor = Color.White;
-            label2.Location = new Point(0, 123);
+            label2.Location = new Point(1, 43);
             label2.Name = "label2";
             label2.Size = new Size(735, 200);
             label2.TabIndex = 28;
@@ -161,7 +117,7 @@
             siticoneButton1.IsReadOnly = false;
             siticoneButton1.IsToggleButton = false;
             siticoneButton1.IsToggled = false;
-            siticoneButton1.Location = new Point(299, 388);
+            siticoneButton1.Location = new Point(300, 308);
             siticoneButton1.LongPressDurationMS = 1000;
             siticoneButton1.Name = "siticoneButton1";
             siticoneButton1.NormalFontStyle = FontStyle.Regular;
@@ -195,10 +151,9 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(15, 15, 15);
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 369);
             Controls.Add(siticoneButton1);
             Controls.Add(label2);
-            Controls.Add(siticonePictureBox1);
             Controls.Add(label4);
             Controls.Add(label1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -212,7 +167,6 @@
 
         private Label label4;
         private Label label1;
-        private SiticoneNetCoreUI.SiticonePictureBox siticonePictureBox1;
         private Label label2;
         private SiticoneNetCoreUI.SiticoneButton siticoneButton1;
     }

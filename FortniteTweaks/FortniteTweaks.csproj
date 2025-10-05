@@ -55,7 +55,7 @@
     <Content Include="Sounds\join-discord-server-hovered.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="keyboardclick.wav">
+    <Content Include="Sounds\keyboardclick.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="LunchboxTweaks\fortnite_config.bat">
