@@ -90,4 +90,5 @@ Note on Support: While community support may be available, recovery for major is
 
 ### **5. If you do everything correctly the main page should look something like this:**
    
-<img width="800" height="578" alt="Screenshot 2025-10-02 232704" src="https://github.com/user-attachments/assets/41bc86c0-fee8-4df5-953e-e5c29546f6d9" />
+
+![IMG_0389](https://github.com/user-attachments/assets/e1b711d4-6348-45a5-a2ec-0171d2d7a9f2)
